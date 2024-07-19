@@ -7,18 +7,31 @@
 
 import SwiftUI
 
+// Main view displaying a list of components
 struct ContentView: View {
+    @StateObject private var viewModel = ListViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List {
+                ForEach(SectionType.allCases, id: \.self) { section in
+                    Section(header: Text(section.rawValue)) {
+                        ForEach(viewModel.filteredItems.filter { $0.section == section }) { item in
+                            NavigationLink(destination: DetailView(item: item)) {
+                                HStack {
+                                    Image(systemName: item.icon)
+                                    Text(item.title)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Components")
+            .searchable(text: $viewModel.searchText)
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
-}
+
+
